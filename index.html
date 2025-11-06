@@ -99,3 +99,43 @@
   </style>
 </head>
 <body>  
+  <div id="flash"></div>
+
+  <div class="app">
+    <h1>🔥 ABIF</h1>
+    <p class="subtitle">Détection de plagiat avec style et intelligence ✨</p>
+
+    <div class="nav-buttons">
+      <button class="btn" onclick="showSection('home')">🏠 Accueil</button>
+      <button class="btn" onclick="showSection('blacklist')">🚫 Blacklist</button>
+      <button class="btn" onclick="showSection('compare')">🔍 Comparer</button>
+    </div>
+
+    <section id="home" class="active">
+      <h2>Bienvenue sur ABIF 👋</h2>
+      <p>Comparez des textes, détectez le plagiat et gardez la classe 😎</p>
+    </section>
+
+    <section id="blacklist">
+      <h2>Liste Noire 🚫</h2>
+      <form class="blacklist-form" onsubmit="addToBlacklist(event)">
+        <input type="text" id="nom" placeholder="Nom de l'étudiant..." required>
+        <button type="submit">Ajouter</button>
+      </form>
+      <ul id="blacklist-list" class="blacklist"></ul>
+    </section>
+
+    <section id="compare">
+      <h2>Comparer deux textes 🔍</h2>
+      <input type="text" id="nomEtudiant1" placeholder="Nom de l'étudiant 1..." required>
+      <input type="text" id="nomEtudiant2" placeholder="Nom de l'étudiant 2..." required>
+      <textarea id="text1" placeholder="Texte de l'étudiant 1..."></textarea>
+      <textarea id="text2" placeholder="Texte de l'étudiant 2..."></textarea>
+      <button class="compare-btn" onclick="compareTexts()">Comparer</button>
+
+      <div class="progress">
+        <div class="progress-bar" id="progress-bar">0%</div>
+      </div>
+      <div class="result" id="result">⏳ En attente...</div>
+    </section>
+  </div>
