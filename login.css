@@ -66,4 +66,18 @@ button:hover {
   font-size: 0.9rem;
   margin-top: 10px;
 }
+.logo-container {
+  position: absolute;
+  top: 20px;
+  right: 40px;
+  z-index: 10; /* pour que le logo soit au-dessus du reste */
+}
+
+.logo-image {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #67355d; /* tu peux changer la couleur si ton fond est clair */
+}
 
