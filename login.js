@@ -13,6 +13,6 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
     localStorage.setItem("loggedIn", "true");
     window.location.href = "index.html";
   } else {
-    errorMsg.textContent = "Nom d'utilisateur ou mot de passe incorrect.";
+    errorMsg.textContent = "Nom d'utilisateur ou mot de passe incorrect";
   }
 });
