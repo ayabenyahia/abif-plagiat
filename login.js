@@ -6,7 +6,7 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
   const errorMsg = document.getElementById("error-msg");
 
   // Identifiants valides
-  const validUsername = "admin";
+  const validUsername = "aya";
   const validPassword = "1234";
 
   if (username === validUsername && password === validPassword) {
