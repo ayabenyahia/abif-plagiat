@@ -9,7 +9,7 @@ class TextAnalyzer:
     Utilise : Jaccard (basique), Cosinus (vectoriel), TF-IDF (IA/Machine Learning)
     """
     
-    def _init_(self):
+    def __init__(self):
         self.processor = TextProcessor()
         print("✅ Analyseur de texte initialisé avec TF-IDF (IA)")
     
@@ -26,16 +26,20 @@ class TextAnalyzer:
         words1 = self.processor.extract_words(clean_text1)
         words2 = self.processor.extract_words(clean_text2)
         
-        # Méthode 1 : Jaccard (basique)
+        # Suppression des mots vides (stopwords)
+        words1 = self.processor.remove_stopwords(words1)
+        words2 = self.processor.remove_stopwords(words2)
+        
+        # Méthode 1 : Jaccard
         jaccard = self._calculate_jaccard_similarity(words1, words2)
         
         # Méthode 2 : Cosinus basique
         cosine_basic = self._calculate_cosine_similarity(words1, words2)
         
-        # Méthode 3 : TF-IDF (IA/Machine Learning)
-        tfidf_sim = self._calculate_tfidf_similarity(text1, text2)
+        # Méthode 3 : TF-IDF (IA / Machine Learning)
+        tfidf_sim = self._calculate_tfidf_similarity(clean_text1, clean_text2)
         
-        # Calcul de la similarité finale (moyenne pondérée privilégiant l'IA)
+        # Calcul de la similarité finale (pondérée)
         final_similarity = (jaccard * 0.3 + cosine_basic * 0.2 + tfidf_sim * 0.5)
         
         return {
@@ -60,8 +64,8 @@ class TextAnalyzer:
         clean_text1 = self.processor.clean_text(text1)
         clean_text2 = self.processor.clean_text(text2)
         
-        words1 = set(self.processor.extract_words(clean_text1))
-        words2 = set(self.processor.extract_words(clean_text2))
+        words1 = set(self.processor.remove_stopwords(self.processor.extract_words(clean_text1)))
+        words2 = set(self.processor.remove_stopwords(self.processor.extract_words(clean_text2)))
         
         # Mots communs
         common = words1 & words2
@@ -116,9 +120,8 @@ class TextAnalyzer:
         vec2 = [words2.count(word) for word in vocab]
         
         dot_product = sum(a * b for a, b in zip(vec1, vec2))
-        
-        norm1 = sum(a * 2 for a in vec1) * 0.5
-        norm2 = sum(b * 2 for b in vec2) * 0.5
+        norm1 = (sum(a ** 2 for a in vec1)) ** 0.5
+        norm2 = (sum(b ** 2 for b in vec2)) ** 0.5
         
         if norm1 == 0 or norm2 == 0:
             return 0.0
@@ -129,37 +132,19 @@ class TextAnalyzer:
     def _calculate_tfidf_similarity(self, text1, text2):
         """
         🤖 Similarité TF-IDF (Intelligence Artificielle / Machine Learning)
-        
-        TF-IDF = Term Frequency - Inverse Document Frequency
-        
-        Cette technique de Machine Learning pondère l'importance des mots :
-        - Les mots fréquents ont moins de poids (ex: "le", "la", "de")
-        - Les mots rares et significatifs ont plus de poids (ex: "algorithme", "plagiat")
-        
-        C'est une technique NLP (Natural Language Processing) utilisée dans :
-        - Moteurs de recherche (Google, Bing)
-        - Systèmes de recommandation
-        - Détection de plagiat professionnelle
         """
         try:
-            # Création du vectoriseur TF-IDF (modèle ML)
             vectorizer = TfidfVectorizer(
-                lowercase=True,           # Normalisation
-                token_pattern=r'\b\w+\b', # Extraction de tokens
-                max_features=1000         # Limite de features
+                lowercase=True,
+                token_pattern=r'\b\w+\b',
+                max_features=1000
             )
-            
-            # Transformation des textes en vecteurs TF-IDF (embedding)
             tfidf_matrix = vectorizer.fit_transform([text1, text2])
-            
-            # Calcul de la similarité cosinus entre les vecteurs
             similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
-            
             return float(similarity)
             
         except Exception as e:
-            print(f" Erreur TF-IDF: {e}")
-            # Fallback sur méthode basique
+            print(f"⚠️ Erreur TF-IDF: {e}")
             words1 = self.processor.extract_words(self.processor.clean_text(text1))
             words2 = self.processor.extract_words(self.processor.clean_text(text2))
             return self._calculate_jaccard_similarity(words1, words2)

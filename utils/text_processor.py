@@ -16,18 +16,10 @@ class TextProcessor:
         if not text:
             return ""
         
-        # Minuscules
         text = text.lower()
-        
-        # Suppression ponctuation
         text = text.translate(str.maketrans('', '', string.punctuation))
-        
-        # Suppression espaces multiples
         text = re.sub(r'\s+', ' ', text)
-        
-        # Suppression espaces début/fin
         text = text.strip()
-        
         return text
     
     def extract_words(self, text):
@@ -36,13 +28,11 @@ class TextProcessor:
         """
         if not text:
             return []
-        
-        words = text.split()
-        return [word for word in words if len(word) > 0]
+        return [word for word in text.split() if len(word) > 0]
     
     def remove_stopwords(self, words, language='fr'):
         """
-        Supprime les mots vides (optionnel)
+        Supprime les mots vides (stopwords)
         """
         stopwords_fr = {
             'le', 'la', 'les', 'un', 'une', 'des', 'de', 'du', 'et', 'ou',
