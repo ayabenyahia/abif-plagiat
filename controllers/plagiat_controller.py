@@ -5,31 +5,26 @@ from mysql.connector import pooling
 from datetime import datetime
 import traceback
 
-# =====================================================
+
 # Initialisation
-# =====================================================
+
 plagiat_bp = Blueprint('plagiat', __name__)
 analyzer = TextAnalyzer()
 
-# =====================================================
-# Configuration base de données (pool de connexions)
-# =====================================================
-db_config = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': '',
-    'database': 'black_list_db'
-}
+# connection de base de donnees
 
 db_pool = mysql.connector.pooling.MySQLConnectionPool(
     pool_name="mypool",
     pool_size=5,
-    **db_config
+    host="localhost",
+    user="root",
+    password="",
+    database="black_list_db"
 )
 
-# =====================================================
+
 # Fonction : ajout utilisateur à la blacklist
-# =====================================================
+
 def add_to_blacklist(user_id, similarity_percentage):
     if not user_id:
         print("user_id invalide, blacklist non ajoutée")
@@ -55,9 +50,9 @@ def add_to_blacklist(user_id, similarity_percentage):
         if conn:
             conn.close()
 
-# =====================================================
+
 # ROUTE 1 : Health Check
-# =====================================================
+
 @plagiat_bp.route('/api/health', methods=['GET'])
 def health_check():
     return jsonify({
@@ -66,9 +61,9 @@ def health_check():
         'version': '2.0'
     }), 200
 
-# =====================================================
+
 # ROUTE 2 : Nettoyage de texte
-# =====================================================
+
 @plagiat_bp.route('/api/clean-text', methods=['POST'])
 def clean_text():
     try:
@@ -85,9 +80,8 @@ def clean_text():
         traceback.print_exc()
         return jsonify({'error': str(e), 'success': False}), 500
 
-# =====================================================
 # ROUTE 3 : Extraction de mots
-# =====================================================
+
 @plagiat_bp.route('/api/extract-words', methods=['POST'])
 def extract_words():
     try:
@@ -108,9 +102,8 @@ def extract_words():
     except Exception as e:
         return jsonify({'error': str(e), 'success': False}), 500
 
-# =====================================================
 # ROUTE 4 : Similarité Jaccard
-# =====================================================
+
 @plagiat_bp.route('/api/jaccard-similarity', methods=['POST'])
 def jaccard_similarity():
     try:
@@ -132,9 +125,9 @@ def jaccard_similarity():
     except Exception as e:
         return jsonify({'error': str(e), 'success': False}), 500
 
-# =====================================================
+
 # ROUTE 5 : Similarité Cosinus
-# =====================================================
+
 @plagiat_bp.route('/api/cosine-similarity', methods=['POST'])
 def cosine_similarity():
     try:
@@ -156,9 +149,8 @@ def cosine_similarity():
     except Exception as e:
         return jsonify({'error': str(e), 'success': False}), 500
 
-# =====================================================
 # ROUTE 6 : Mots communs
-# =====================================================
+
 @plagiat_bp.route('/api/common-words', methods=['POST'])
 def common_words():
     try:
@@ -174,9 +166,8 @@ def common_words():
     except Exception as e:
         return jsonify({'error': str(e), 'success': False}), 500
 
-# =====================================================
 # ROUTE 7 : Mots uniques
-# =====================================================
+
 @plagiat_bp.route('/api/unique-words', methods=['POST'])
 def unique_words():
     try:
@@ -199,9 +190,8 @@ def unique_words():
     except Exception as e:
         return jsonify({'error': str(e), 'success': False}), 500
 
-# =====================================================
 # ROUTE 8 : Comparaison complète + ajout blacklist
-# =====================================================
+
 @plagiat_bp.route('/api/compare', methods=['POST'])
 def compare_texts():
     try:
@@ -223,13 +213,16 @@ def compare_texts():
             'method_used': result['method_used'],
             'details': result['details']
         }), 200
+
     except Exception as e:
         traceback.print_exc()
         return jsonify({'error': str(e), 'success': False}), 500
 
-# =====================================================
+
+
+
 # ROUTE 9 : Comparaison avec highlight
-# =====================================================
+
 @plagiat_bp.route('/api/compare-with-highlight', methods=['POST'])
 def compare_with_highlight():
     try:
@@ -250,9 +243,8 @@ def compare_with_highlight():
     except Exception as e:
         return jsonify({'error': str(e), 'success': False}), 500
 
-# =====================================================
 # ROUTE 10 : Afficher la blacklist
-# =====================================================
+
 @plagiat_bp.route('/api/blacklist', methods=['GET'])
 def get_blacklist():
     try:
