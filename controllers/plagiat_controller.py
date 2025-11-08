@@ -17,7 +17,7 @@ analyzer = TextAnalyzer()
 db_config = {
     'host': 'localhost',
     'user': 'root',
-    'password': '12345678',
+    'password': '',
     'database': 'black_list_db'
 }
 
