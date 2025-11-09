@@ -25,22 +25,24 @@ db_pool = mysql.connector.pooling.MySQLConnectionPool(
 
 # Fonction : ajout utilisateur à la blacklist
 
-def add_to_blacklist(user_id, similarity_percentage):
-    if not user_id:
-        print("user_id invalide, blacklist non ajoutée")
-        return
+from datetime import datetime
+import traceback
+
+def add_to_blacklist(nom_etudiant1, nom_etudiant2, similarity_percentage):
     try:
         conn = db_pool.get_connection()
         cursor = conn.cursor()
+        print("Connexion OK, prêt à insérer dans la base...")
+
         sql = """
-        INSERT INTO personnes_blacklistees (identifiant, raison, date_ajout)
+        INSERT INTO personnes_blacklist (nom_etudiant1, nom_etudiant2, similarite)
         VALUES (%s, %s, %s)
         """
-        raison = f"Similarité {similarity_percentage:.2f}%"
-        date_ajout = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        cursor.execute(sql, (user_id, raison, date_ajout))
+        cursor.execute(sql, (nom_etudiant1, nom_etudiant2, similarity_percentage))
         conn.commit()
-        print(f"✅ Utilisateur {user_id} ajouté à la blacklist ({similarity_percentage:.2f}%)")
+
+        print(f"✅ Étudiants {nom_etudiant1} & {nom_etudiant2} ajoutés ({similarity_percentage:.2f}%)")
+
     except Exception as e:
         print(f"Erreur ajout blacklist: {e}")
         traceback.print_exc()
@@ -200,12 +202,13 @@ def compare_texts():
             return jsonify({'error': 'Les champs "text1" et "text2" sont requis', 'success': False}), 400
 
         text1, text2 = data['text1'], data['text2']
+        nom1, nom2 = data.get('nom_etudiant1'), data.get('nom_etudiant2')
+
         result = analyzer.analyze_similarity(text1, text2)
 
-        # Ajout automatique à la blacklist
-        user_id = data.get('user_id')
-        if user_id and result['similarity_percentage'] >= 80:
-            add_to_blacklist(user_id, result['similarity_percentage'])
+        # Ajout automatique à la blacklist si similarité >= 80%
+        if nom1 and nom2 and result['similarity_percentage'] >= 80:
+            add_to_blacklist(nom1, nom2, result['similarity_percentage'])
 
         return jsonify({
             'success': True,
@@ -217,7 +220,6 @@ def compare_texts():
     except Exception as e:
         traceback.print_exc()
         return jsonify({'error': str(e), 'success': False}), 500
-
 
 
 
